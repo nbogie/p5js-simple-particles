@@ -2,6 +2,8 @@
 
 A simple p5js learning experiment using various colours and blend modes to draw particles the canvas.
 
+![Another screenshot](screenshots/yellowrust-sparse-small.png)
+
 ###Controls
 
     ,: change to previous favourite config and respawn
@@ -28,4 +30,3 @@ You can an old version of this at http://codepen.io/enz0/pen/yOobpQ.
 
 ![A screenshot](screenshots/violetsticks-with-orbit-small.png)
 
-![Another screenshot](screenshots/yellowrust-sparse-small.png)
