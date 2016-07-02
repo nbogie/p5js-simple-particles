@@ -42,7 +42,6 @@ function restart() {
       console.log("chosen fave null! " + faveIx);
     }
     console.log("chose fave: " + chosenFave.title);
-    console.log("chose fave: " + chosenFave.title);
     blendModeNum = chosenFave.blendModeNum;
     f = chosenFave.from;
     t = chosenFave.to;
@@ -55,7 +54,7 @@ function restart() {
     blendModeNum = floor(random() * 14);
     faveTitle = "(generated)";
   }
-  config.doBumps = pick([true, false, false, false]);
+  config.doBumps = pick([true, false, false]);
   if (config.doBumps) {
     strokeWeightCoef = pick([0.1, 0.2, 0.2, 0.3, 0.5]);
   } else {
