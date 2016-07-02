@@ -26,5 +26,6 @@ You can an old version of this at http://codepen.io/enz0/pen/yOobpQ.
 
 ### Screenshots
 
-![]()
-![]()
+![A screenshot](screenshots/violetsticks-with-orbit-small.png)
+
+![Another screenshot](screenshots/yellowrust-sparse-small.png)
