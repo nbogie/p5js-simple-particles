@@ -19,7 +19,6 @@ var Options = function() {
   this.explosionCoef = 0.1;
   this.pause = function() { togglePause(); };
   this.bumpNow = function() { bumpParticles(15); };
-  this.pickFaveNotRandom = true;
   this.guiPickedFaveName = "yellowgreens";
 }
 var gOpts;
@@ -44,7 +43,6 @@ function setup() {
   gGUI.add(gOpts, 'showDebug');
   gGUI.add(gOpts, 'numParticles', 1, 100);
   gGUI.add(gOpts, 'explosionCoef', 0.01, 2);
-  gGUI.add(gOpts, 'pickFaveNotRandom');
   gGUI.add(gOpts, 'guiPickedFaveName', ["(generated)"] .concat(gFaves.map(function(f) { return f.title; } )) ).onFinishChange(function(value) {
   restart();
 });
@@ -56,19 +54,9 @@ function faveByTitle(title) {
 
 function restart() {
   var f, t;
-  var chosenFave;  
-  if (gOpts.pickFaveNotRandom) {
-    chosenFave = faveByTitle(gOpts.guiPickedFaveName);
-    if (!chosenFave) {
-      if (gFaveIx < 0) {
-        chosenFave = pick(gFaves);
-      } else {
-        chosenFave = gFaves[gFaveIx];
-      }
-    }
-    if (!chosenFave) {
-      console.log("chosen fave null! " + gFaveIx);
-    }
+  
+  var chosenFave = faveByTitle(gOpts.guiPickedFaveName);    
+  if (chosenFave) {
     console.log("chose fave: " + chosenFave.title);
     gBlendModeNum = chosenFave.blendModeNum;
     f = chosenFave.from;
@@ -82,6 +70,7 @@ function restart() {
     gBlendModeNum = floor(random() * 14);
     gFaveTitle = "(generated)";
   }
+  
   var bumpThisOne = (random() < gOpts.bumpProbability);
   if (bumpThisOne) {
     gStrokeWeightCoef = pick([0.1, 0.2, 0.2, 0.3, 0.5]);
@@ -110,10 +99,6 @@ function restart() {
 function restartAndReschedule() {
   restart();
   setTimeout(restartAndReschedule, 5000);
-}
-
-function toggleFaveOrRandom() { 
-  gOpts.pickFaveNotRandom = !gOpts.pickFaveNotRandom;
 }
 
 function toggleDebug() {
@@ -281,8 +266,6 @@ function keyTyped() {
   var v = key.charCodeAt(0) - "0".charCodeAt(0);
   if (key === "r") {
     reportColors();
-  } else if (key === "f") {
-    toggleFaveOrRandom();
   } else if (key === "b") {
     bumpParticles(15);
   } else if (key === "c") {
