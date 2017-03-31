@@ -377,7 +377,7 @@ function draw() {
 }
 
 function reportColors() {
-  console.log("recording color scheme..." + new Date());
+  console.log("recording color scheme into favourites..." + new Date());
 
   f = gPts[0].fromColor;
   t = gPts[0].toColor;
