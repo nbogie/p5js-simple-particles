@@ -20,23 +20,14 @@ var Options = function() {
   this.pause = function() { togglePause(); };
   this.bumpNow = function() { bumpParticles(15); };
   this.pickFaveNotRandom = true;
+  this.guiPickedFaveName = "yellowgreens";
 }
 var gOpts;
+var gGUI;
 
 function setup() {
   gOpts = new Options();
   createCanvas(windowWidth, windowHeight);
-  
-  var gui = new dat.GUI();
-  gui.add(gOpts, 'pause');
-  gui.add(gOpts, 'bumpProbability', 0, 1);
-  gui.add(gOpts, 'bumpNow');
-  gui.add(gOpts, 'showDebug');
-  gui.add(gOpts, 'numParticles', 1, 100);
-  gui.add(gOpts, 'explosionCoef', 0.01, 2);
-  gui.add(gOpts, 'pickFaveNotRandom');
-  //gui.addColor(gOpts, 'lineColor');
-
   frameRate(30);
   gFaves = createFavourites();
   gFaveIx = pickIx(gFaves);
@@ -44,16 +35,36 @@ function setup() {
     x: windowWidth / 2,
     y: windowHeight / 2
   };
+
+    
+  gGUI = new dat.GUI();
+  gGUI.add(gOpts, 'pause');
+  gGUI.add(gOpts, 'bumpProbability', 0, 1);
+  gGUI.add(gOpts, 'bumpNow');
+  gGUI.add(gOpts, 'showDebug');
+  gGUI.add(gOpts, 'numParticles', 1, 100);
+  gGUI.add(gOpts, 'explosionCoef', 0.01, 2);
+  gGUI.add(gOpts, 'pickFaveNotRandom');
+  gGUI.add(gOpts, 'guiPickedFaveName', ["(generated)"] .concat(gFaves.map(function(f) { return f.title; } )) ).onFinishChange(function(value) {
+  restart();
+});
   restartAndReschedule();
+}
+function faveByTitle(title) {
+  return gFaves.find(function(candidate) { return candidate.title === title; });
 }
 
 function restart() {
-  var chosenFave, f, t;
+  var f, t;
+  var chosenFave;  
   if (gOpts.pickFaveNotRandom) {
-    if (gFaveIx < 0) {
-      chosenFave = pick(gFaves);
-    } else {
-      chosenFave = gFaves[gFaveIx];
+    chosenFave = faveByTitle(gOpts.guiPickedFaveName);
+    if (!chosenFave) {
+      if (gFaveIx < 0) {
+        chosenFave = pick(gFaves);
+      } else {
+        chosenFave = gFaves[gFaveIx];
+      }
     }
     if (!chosenFave) {
       console.log("chosen fave null! " + gFaveIx);
@@ -304,7 +315,16 @@ function nextFave() {
   if (gFaveIx >= gFaves.length) {
     gFaveIx = 0;
   }
+
+  gOpts.guiPickedFaveName = gFaves[gFaveIx].title;
+  updateGUI();
   restart();
+}
+
+function updateGUI() {
+    for (var i in gGUI.__controllers) {
+    gGUI.__controllers[i].updateDisplay();
+  }
 }
 
 function prevFave() {
@@ -312,6 +332,8 @@ function prevFave() {
   if (gFaveIx < 0) {
     gFaveIx = gFaves.length - 1;
   }
+  gOpts.guiPickedFaveName = gFaves[gFaveIx].title;
+  updateGUI();
   restart();
 }
 
