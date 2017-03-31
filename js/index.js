@@ -1,3 +1,4 @@
+'use strict';
 var pts = [];
 var faves = [];
 var faveIx = 0;
@@ -32,6 +33,7 @@ function setup() {
 }
 
 function restart() {
+  var chosenFave, f, t;
   if (pickFaveNotRandom) {
     if (faveIx < 0) {
       chosenFave = pick(faves);
@@ -54,7 +56,7 @@ function restart() {
     blendModeNum = floor(random() * 14);
     faveTitle = "(generated)";
   }
-  config.doBumps = pick([true, false, false ,false]);
+  config.doBumps = pick([true, false, false, false]);
   if (config.doBumps) {
     strokeWeightCoef = pick([0.1, 0.2, 0.2, 0.3, 0.5]);
   } else {
@@ -64,8 +66,8 @@ function restart() {
   background(bgColor);
   changeBlendMode(blendModeNum);
   pts = [];
-  explosionRad = width / 10 + random(width / 4);
-  for (i = 0; i < config.numParticles; i++) {
+  var explosionRad = width / 10 + random(width / 4);
+  for (var i = 0; i < config.numParticles; i++) {
     pts.push(
       randParticle(centre, explosionRad));
   }
@@ -137,7 +139,9 @@ function pick(arr) {
 
 function pickOther(arr, notThisOne) {
   //TODO: handle case when array ONLY contains references to the one we don't want.  (Infinite loop.)
-  ix = arr.indexOf(notThisOne);
+  var ix = arr.indexOf(notThisOne);
+  var chosenIx;
+  
   if (ix === -1) {
     return arr[floor(random() * arr.length)];
   } else {
@@ -154,8 +158,8 @@ function assignNewTarget(p) {
 }
 
 function toCartesian(rad, ang) {
-  x = round(rad * cos(ang));
-  y = round(rad * sin(ang));
+  var x = round(rad * cos(ang));
+  var y = round(rad * sin(ang));
   return newP(x, y);
 }
 
@@ -182,9 +186,9 @@ function randBetween(a, b) {
 }
 
 function randParticle(ctr, rad) {
-  p = toCartesian(random(rad), random(radians(360)));
-  x = ctr.x + p.x;
-  y = ctr.y + p.y;
+  var p = toCartesian(random(rad), random(radians(360)));
+  var x = ctr.x + p.x;
+  var y = ctr.y + p.y;
   return {
     x: x,
     y: y,
@@ -248,7 +252,7 @@ function bumpParticle(p, bumpV) {
 }
 
 function keyTyped() {
-  v = key.charCodeAt(0) - "0".charCodeAt(0);
+  var v = key.charCodeAt(0) - "0".charCodeAt(0);
   if (key === "r") {
     reportColors();
   } else if (key === "f") {
@@ -275,8 +279,7 @@ function keyTyped() {
 
 function captureParticles() {
   console.log("particle capture: ");
-  recordedPts = pts;
-  for (p of pts) {
+  for (var p of pts) {
     console.log(p);
   }
 }
@@ -309,7 +312,7 @@ function subtract(p1, p2) {
 }
 
 function normalise(v) {
-  m = mag(v.x, v.y);
+  var m = mag(v.x, v.y);
   return {
     x: v.x / m,
     y: v.y / m
@@ -317,7 +320,7 @@ function normalise(v) {
 }
 
 function accelTowards(p, target) {
-  delta = subtract(target, p);
+  var delta = subtract(target, p);
   delta = normalise(delta);
   p.vx = p.vx + delta.x / 5;
   p.vy = p.vy + delta.y / 5;
@@ -341,10 +344,6 @@ function updatePos(p, inList) {
   p.prevY = p.y;
   p.x = p.x + p.vx;
   p.y = p.y + p.vy;
-  mousePoint = {
-    x: mouseX,
-    y: mouseY
-  };
 
   return accelTowards(p, p.target);
 }
@@ -355,15 +354,16 @@ function draw() {
   });
   stroke(255);
   strokeWeight(2);
-  shouldLerpColor = true;
-  for (p of pts) {
+  var shouldLerpColor = true;
+  var c;
+  for (var p of pts) {
     if (shouldLerpColor) {
       c = lerpColor(p.fromColor, p.toColor, mag(p.vx, p.vy) / 4);
     } else {
       c = p.fromColor;
     }
     fill(c);
-    d = mag(p.vx, p.vy) * 3;
+    var d = mag(p.vx, p.vy) * 3;
     stroke(c);
     strokeWeight(d * strokeWeightCoef);
 
