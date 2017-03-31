@@ -1,21 +1,20 @@
 'use strict';
-var pts = [];
+var gPts = [];
 var gFaves = [];
 var gFaveIx = 0;
 var gBGColor = 0;
 var gBlendModeNum = 2;
-var strokeWeightCoef = 4;
-var faveTitle = "";
+var gStrokeWeightCoef = 4;
+var gFaveTitle = "";
 var gPickFaveNotRandom = true;
-var shouldRun = true;
-var showDebug = false;
-var shouldAutoCycle = true;
-var config = {
+var gShouldRun = true;
+var gShowDebug = false;
+var gConfig = {
   numParticles: 15,
   doBumps: true,
   bumpV: 200
 }
-var centre = {
+var gCentre = {
   x: 100,
   y: 100
 };
@@ -25,7 +24,7 @@ function setup() {
   frameRate(30);
   gFaves = createFavourites();
   gFaveIx = pickIx(gFaves);
-  centre = {
+  gCentre = {
     x: windowWidth / 2,
     y: windowHeight / 2
   };
@@ -47,35 +46,35 @@ function restart() {
     gBlendModeNum = chosenFave.blendModeNum;
     f = chosenFave.from;
     t = chosenFave.to;
-    faveTitle = chosenFave.title;
+    gFaveTitle = chosenFave.title;
     gBGColor = chosenFave.bgColor;
   } else {
     f = randColor();
     t = randColor();
     gBGColor = pick([0, 50, 255]);
     gBlendModeNum = floor(random() * 14);
-    faveTitle = "(generated)";
+    gFaveTitle = "(generated)";
   }
-  config.doBumps = pick([true, false, false, false]);
-  if (config.doBumps) {
-    strokeWeightCoef = pick([0.1, 0.2, 0.2, 0.3, 0.5]);
+  gConfig.doBumps = pick([true, false, false, false]);
+  if (gConfig.doBumps) {
+    gStrokeWeightCoef = pick([0.1, 0.2, 0.2, 0.3, 0.5]);
   } else {
-    strokeWeightCoef = pick([0.1, 0.2, 0.2, 0.3, 0.5, 0.5, 0.8, 1, 1.5, 2, 3, 10]);
+    gStrokeWeightCoef = pick([0.1, 0.2, 0.2, 0.3, 0.5, 0.5, 0.8, 1, 1.5, 2, 3, 10]);
   }
   blendMode(REPLACE);
   background(gBGColor);
   changeBlendMode(gBlendModeNum);
-  pts = [];
+  gPts = [];
   var explosionRad = width / 10 + random(width / 4);
-  for (var i = 0; i < config.numParticles; i++) {
-    pts.push(
-      randParticle(centre, explosionRad));
+  for (var i = 0; i < gConfig.numParticles; i++) {
+    gPts.push(
+      randParticle(gCentre, explosionRad));
   }
-  pts = pts.map(assignNewTarget);
-  pts = pts.map(function(p) {
+  gPts = gPts.map(assignNewTarget);
+  gPts = gPts.map(function(p) {
     return assignColors(p, f, t);
   });
-  if (config.doBumps) {
+  if (gConfig.doBumps) {
     bumpParticles(200);
   }
   //  loop();
@@ -87,16 +86,12 @@ function restartAndReschedule() {
 }
 
 function toggleDebug() {
-  showDebug = !showDebug;
-}
-
-function toggleAutoCycle() {
-  autoCycle = !autoCycle;
+  gShowDebug = !gShowDebug;
 }
 
 function togglePause() {
-  shouldRun = !shouldRun;
-  if (shouldRun) {
+  gShouldRun = !gShouldRun;
+  if (gShouldRun) {
     loop();
   } else {
     noLoop();
@@ -111,7 +106,7 @@ function newP(x, y) {
 }
 
 function mousePressed() {
-  centre = {
+  gCentre = {
     x: mouseX,
     y: mouseY
   };
@@ -154,7 +149,7 @@ function pickOther(arr, notThisOne) {
 }
 
 function assignNewTarget(p) {
-  return p.target = pickOther(pts, p);
+  return p.target = pickOther(gPts, p);
 }
 
 function toCartesian(rad, ang) {
@@ -238,7 +233,7 @@ function changeBlendMode(v) {
 }
 
 function bumpParticles(n) {
-  pts = pts.map(
+  gPts = gPts.map(
     function(p) {
       return bumpParticle(p, n);
     }
@@ -279,7 +274,7 @@ function keyTyped() {
 
 function captureParticles() {
   console.log("particle capture: ");
-  for (var p of pts) {
+  for (var p of gPts) {
     console.log(p);
   }
 }
@@ -349,14 +344,14 @@ function updatePos(p, inList) {
 }
 
 function draw() {
-  pts = pts.map(function(p) {
-    return updatePos(p, pts);
+  gPts = gPts.map(function(p) {
+    return updatePos(p, gPts);
   });
   stroke(255);
   strokeWeight(2);
   var shouldLerpColor = true;
   var c;
-  for (var p of pts) {
+  for (var p of gPts) {
     if (shouldLerpColor) {
       c = lerpColor(p.fromColor, p.toColor, mag(p.vx, p.vy) / 4);
     } else {
@@ -365,27 +360,27 @@ function draw() {
     fill(c);
     var d = mag(p.vx, p.vy) * 3;
     stroke(c);
-    strokeWeight(d * strokeWeightCoef);
+    strokeWeight(d * gStrokeWeightCoef);
 
     line(p.prevX, p.prevY, p.x, p.y);
   }
 
-  if (showDebug) {
+  if (gShowDebug) {
     stroke(100, 255, 100);
     textSize(20);
     strokeWeight(0);
     stroke(0);
     text("bm: " + gBlendModeNum, 40, windowHeight - 50);
-    text("w: " + strokeWeightCoef, 100, windowHeight - 50);
-    text("title: " + faveTitle, 200, windowHeight - 50);
+    text("w: " + gStrokeWeightCoef, 100, windowHeight - 50);
+    text("title: " + gFaveTitle, 200, windowHeight - 50);
   }
 }
 
 function reportColors() {
   console.log("recording color scheme..." + new Date());
 
-  f = pts[0].fromColor;
-  t = pts[0].toColor;
+  f = gPts[0].fromColor;
+  t = gPts[0].toColor;
   newFave = {
     from: color(red(f), green(f), blue(f)),
     to: color(red(t), green(t), blue(t)),
