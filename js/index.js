@@ -6,21 +6,37 @@ var gBGColor = 0;
 var gBlendModeNum = 2;
 var gStrokeWeightCoef = 4;
 var gFaveTitle = "";
-var gPickFaveNotRandom = true;
-var gShouldRun = true;
-var gShowDebug = false;
-var gConfig = {
-  numParticles: 15,
-  doBumps: true,
-  bumpV: 200
-}
 var gCentre = {
   x: 100,
   y: 100
 };
+var Options = function() {
+  this.numParticles = 15;
+  this.bumpProbability = 0.3;
+  this.bumpV = 200;
+  this.showDebug = false;
+  this.shouldRun = true;
+  this.explosionCoef = 0.1;
+  this.pause = function() { togglePause(); };
+  this.bumpNow = function() { bumpParticles(15); };
+  this.pickFaveNotRandom = true;
+}
+var gOpts;
 
 function setup() {
+  gOpts = new Options();
   createCanvas(windowWidth, windowHeight);
+  
+  var gui = new dat.GUI();
+  gui.add(gOpts, 'pause');
+  gui.add(gOpts, 'bumpProbability', 0, 1);
+  gui.add(gOpts, 'bumpNow');
+  gui.add(gOpts, 'showDebug');
+  gui.add(gOpts, 'numParticles', 1, 100);
+  gui.add(gOpts, 'explosionCoef', 0.01, 2);
+  gui.add(gOpts, 'pickFaveNotRandom');
+  //gui.addColor(gOpts, 'lineColor');
+
   frameRate(30);
   gFaves = createFavourites();
   gFaveIx = pickIx(gFaves);
@@ -33,7 +49,7 @@ function setup() {
 
 function restart() {
   var chosenFave, f, t;
-  if (gPickFaveNotRandom) {
+  if (gOpts.pickFaveNotRandom) {
     if (gFaveIx < 0) {
       chosenFave = pick(gFaves);
     } else {
@@ -55,8 +71,8 @@ function restart() {
     gBlendModeNum = floor(random() * 14);
     gFaveTitle = "(generated)";
   }
-  gConfig.doBumps = pick([true, false, false, false]);
-  if (gConfig.doBumps) {
+  var bumpThisOne = (random() < gOpts.bumpProbability);
+  if (bumpThisOne) {
     gStrokeWeightCoef = pick([0.1, 0.2, 0.2, 0.3, 0.5]);
   } else {
     gStrokeWeightCoef = pick([0.1, 0.2, 0.2, 0.3, 0.5, 0.5, 0.8, 1, 1.5, 2, 3, 10]);
@@ -65,8 +81,8 @@ function restart() {
   background(gBGColor);
   changeBlendMode(gBlendModeNum);
   gPts = [];
-  var explosionRad = width / 10 + random(width / 4);
-  for (var i = 0; i < gConfig.numParticles; i++) {
+  var explosionRad = width * gOpts.explosionCoef + random(width / 4);
+  for (var i = 0; i < gOpts.numParticles; i++) {
     gPts.push(
       randParticle(gCentre, explosionRad));
   }
@@ -74,7 +90,7 @@ function restart() {
   gPts = gPts.map(function(p) {
     return assignColors(p, f, t);
   });
-  if (gConfig.doBumps) {
+  if (bumpThisOne) {
     bumpParticles(200);
   }
   //  loop();
@@ -85,13 +101,17 @@ function restartAndReschedule() {
   setTimeout(restartAndReschedule, 5000);
 }
 
+function toggleFaveOrRandom() { 
+  gOpts.pickFaveNotRandom = !gOpts.pickFaveNotRandom;
+}
+
 function toggleDebug() {
-  gShowDebug = !gShowDebug;
+  gOpts.showDebug =   !gOpts.showDebug;
 }
 
 function togglePause() {
-  gShouldRun = !gShouldRun;
-  if (gShouldRun) {
+  gOpts.shouldRun = !gOpts.shouldRun;
+  if (gOpts.shouldRun) {
     loop();
   } else {
     noLoop();
@@ -251,7 +271,7 @@ function keyTyped() {
   if (key === "r") {
     reportColors();
   } else if (key === "f") {
-    gPickFaveNotRandom = !gPickFaveNotRandom;
+    toggleFaveOrRandom();
   } else if (key === "b") {
     bumpParticles(15);
   } else if (key === "c") {
@@ -365,7 +385,7 @@ function draw() {
     line(p.prevX, p.prevY, p.x, p.y);
   }
 
-  if (gShowDebug) {
+  if (gOpts.showDebug) {
     stroke(100, 255, 100);
     textSize(20);
     strokeWeight(0);
@@ -527,9 +547,9 @@ function createFavourites() {
       from: color(1, 4, 226),
       to: color(251, 180, 90),
       title: 'yellowrust',
-      blendModeNum: 13,
+      blendModeNum: 13,      
       bgColor: 50
-    }, {
+    }, {      
       from: color(83, 54, 217),
       to: color(116, 6, 64),
       title: 'red ink',
