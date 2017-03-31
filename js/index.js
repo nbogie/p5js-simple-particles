@@ -141,7 +141,7 @@ function pickOther(arr, notThisOne) {
   //TODO: handle case when array ONLY contains references to the one we don't want.  (Infinite loop.)
   var ix = arr.indexOf(notThisOne);
   var chosenIx;
-  
+
   if (ix === -1) {
     return arr[floor(random() * arr.length)];
   } else {
