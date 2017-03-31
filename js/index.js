@@ -19,7 +19,7 @@ var Options = function() {
   this.explosionCoef = 0.1;
   this.pause = function() { togglePause(); };
   this.bumpNow = function() { bumpParticles(15); };
-  this.guiPickedFaveName = "yellowgreens";
+  this.colourSchemeName = "yellowgreens";
 }
 var gOpts;
 var gGUI;
@@ -43,7 +43,7 @@ function setup() {
   gGUI.add(gOpts, 'showDebug');
   gGUI.add(gOpts, 'numParticles', 1, 100);
   gGUI.add(gOpts, 'explosionCoef', 0.01, 2);
-  gGUI.add(gOpts, 'guiPickedFaveName', ["(generated)"] .concat(gFaves.map(function(f) { return f.title; } )) ).onFinishChange(function(value) {
+  gGUI.add(gOpts, 'colourSchemeName', ["(generated)"] .concat(gFaves.map(function(f) { return f.title; } )) ).onFinishChange(function(value) {
   restart();
 });
   restartAndReschedule();
@@ -55,7 +55,7 @@ function faveByTitle(title) {
 function restart() {
   var f, t;
   
-  var chosenFave = faveByTitle(gOpts.guiPickedFaveName);    
+  var chosenFave = faveByTitle(gOpts.colourSchemeName);    
   if (chosenFave) {
     console.log("chose fave: " + chosenFave.title);
     gBlendModeNum = chosenFave.blendModeNum;
@@ -299,7 +299,7 @@ function nextFave() {
     gFaveIx = 0;
   }
 
-  gOpts.guiPickedFaveName = gFaves[gFaveIx].title;
+  gOpts.colourSchemeName = gFaves[gFaveIx].title;
   updateGUI();
   restart();
 }
@@ -315,7 +315,7 @@ function prevFave() {
   if (gFaveIx < 0) {
     gFaveIx = gFaves.length - 1;
   }
-  gOpts.guiPickedFaveName = gFaves[gFaveIx].title;
+  gOpts.colourSchemeName = gFaves[gFaveIx].title;
   updateGUI();
   restart();
 }
@@ -404,13 +404,13 @@ function draw() {
 function reportColors() {
   console.log("recording color scheme into favourites..." + new Date());
 
-  f = gPts[0].fromColor;
-  t = gPts[0].toColor;
-  newFave = {
+  var f = gPts[0].fromColor;
+  var t = gPts[0].toColor;
+  var newFave = {
     from: color(red(f), green(f), blue(f)),
     to: color(red(t), green(t), blue(t)),
     title: "untitled",
-    blendModeNum: gBlendModeNum,
+    blendModeNum: gBlendModeNum,    
     bgColor: gBGColor
   }
 
