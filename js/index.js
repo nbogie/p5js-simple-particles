@@ -1,12 +1,12 @@
 'use strict';
 var pts = [];
-var faves = [];
-var faveIx = 0;
-var bgColor = 0;
-var blendModeNum = 2;
+var gFaves = [];
+var gFaveIx = 0;
+var gBGColor = 0;
+var gBlendModeNum = 2;
 var strokeWeightCoef = 4;
 var faveTitle = "";
-var pickFaveNotRandom = true;
+var gPickFaveNotRandom = true;
 var shouldRun = true;
 var showDebug = false;
 var shouldAutoCycle = true;
@@ -23,8 +23,8 @@ var centre = {
 function setup() {
   createCanvas(windowWidth, windowHeight);
   frameRate(30);
-  faves = createFavourites();
-  faveIx = pickIx(faves);
+  gFaves = createFavourites();
+  gFaveIx = pickIx(gFaves);
   centre = {
     x: windowWidth / 2,
     y: windowHeight / 2
@@ -34,26 +34,26 @@ function setup() {
 
 function restart() {
   var chosenFave, f, t;
-  if (pickFaveNotRandom) {
-    if (faveIx < 0) {
-      chosenFave = pick(faves);
+  if (gPickFaveNotRandom) {
+    if (gFaveIx < 0) {
+      chosenFave = pick(gFaves);
     } else {
-      chosenFave = faves[faveIx];
+      chosenFave = gFaves[gFaveIx];
     }
     if (!chosenFave) {
-      console.log("chosen fave null! " + faveIx);
+      console.log("chosen fave null! " + gFaveIx);
     }
     console.log("chose fave: " + chosenFave.title);
-    blendModeNum = chosenFave.blendModeNum;
+    gBlendModeNum = chosenFave.blendModeNum;
     f = chosenFave.from;
     t = chosenFave.to;
     faveTitle = chosenFave.title;
-    bgColor = chosenFave.bgColor;
+    gBGColor = chosenFave.bgColor;
   } else {
     f = randColor();
     t = randColor();
-    bgColor = pick([0, 50, 255]);
-    blendModeNum = floor(random() * 14);
+    gBGColor = pick([0, 50, 255]);
+    gBlendModeNum = floor(random() * 14);
     faveTitle = "(generated)";
   }
   config.doBumps = pick([true, false, false, false]);
@@ -63,8 +63,8 @@ function restart() {
     strokeWeightCoef = pick([0.1, 0.2, 0.2, 0.3, 0.5, 0.5, 0.8, 1, 1.5, 2, 3, 10]);
   }
   blendMode(REPLACE);
-  background(bgColor);
-  changeBlendMode(blendModeNum);
+  background(gBGColor);
+  changeBlendMode(gBlendModeNum);
   pts = [];
   var explosionRad = width / 10 + random(width / 4);
   for (var i = 0; i < config.numParticles; i++) {
@@ -130,7 +130,7 @@ function assignColors(p, f, t) {
 }
 
 function pickIx(arr) {
-  return floor(random() * faves.length);
+  return floor(random() * gFaves.length);
 }
 
 function pick(arr) {
@@ -203,7 +203,7 @@ function randParticle(ctr, rad) {
 }
 
 function changeBlendMode(v) {
-  blendModeNum = v;
+  gBlendModeNum = v;
   if (v === 1) {
     blendMode(BLEND);
   } else if (v === 2) {
@@ -256,7 +256,7 @@ function keyTyped() {
   if (key === "r") {
     reportColors();
   } else if (key === "f") {
-    pickFaveNotRandom = !pickFaveNotRandom;
+    gPickFaveNotRandom = !gPickFaveNotRandom;
   } else if (key === "b") {
     bumpParticles(15);
   } else if (key === "c") {
@@ -270,8 +270,8 @@ function keyTyped() {
   } else if (key === ".") {
     nextFave();
   } else if (key === "l") {
-    faves = createFavourites();
-    faveIx = pickIx(faves);
+    gFaves = createFavourites();
+    gFaveIx = pickIx(gFaves);
   } else {
     return changeBlendMode(v);
   }
@@ -285,17 +285,17 @@ function captureParticles() {
 }
 
 function nextFave() {
-  faveIx = faveIx + 1;
-  if (faveIx >= faves.length) {
-    faveIx = 0;
+  gFaveIx++;
+  if (gFaveIx >= gFaves.length) {
+    gFaveIx = 0;
   }
   restart();
 }
 
 function prevFave() {
-  faveIx = faveIx - 1;
-  if (faveIx < 0) {
-    faveIx = faves.length - 1;
+  gFaveIx = gFaveIx - 1;
+  if (gFaveIx < 0) {
+    gFaveIx = gFaves.length - 1;
   }
   restart();
 }
@@ -375,7 +375,7 @@ function draw() {
     textSize(20);
     strokeWeight(0);
     stroke(0);
-    text("bm: " + blendModeNum, 40, windowHeight - 50);
+    text("bm: " + gBlendModeNum, 40, windowHeight - 50);
     text("w: " + strokeWeightCoef, 100, windowHeight - 50);
     text("title: " + faveTitle, 200, windowHeight - 50);
   }
@@ -390,17 +390,17 @@ function reportColors() {
     from: color(red(f), green(f), blue(f)),
     to: color(red(t), green(t), blue(t)),
     title: "untitled",
-    blendModeNum: blendModeNum,
-    bgColor: bgColor
+    blendModeNum: gBlendModeNum,
+    bgColor: gBGColor
   }
 
-  faves.push(newFave);
+  gFaves.push(newFave);
   console.log("{from: " +
     colorToStr(newFave.from) + ", to:" +
     colorToStr(newFave.to) +
-    ", title: 'untitled', blendModeNum: " +
-    blendModeNum + ", bgColor: " +
-    bgColor + "}");
+    ", title: 'untitled', gBlendModeNum: " +
+    gBlendModeNum + ", gBGColor: " +
+    gBGColor + "}");
 }
 
 function colorToStr(c) {
