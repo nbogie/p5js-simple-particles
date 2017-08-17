@@ -24,6 +24,12 @@ var Options = function() {
 var gOpts;
 var gGUI;
 
+function windowResized() {
+  resizeCanvas(windowWidth, windowHeight);
+  restart();
+  
+}
+
 function setup() {
   gOpts = new Options();
   createCanvas(windowWidth, windowHeight);
@@ -46,6 +52,8 @@ function setup() {
   gGUI.add(gOpts, 'colourSchemeName', ["(generated)"] .concat(gFaves.map(function(f) { return f.title; } )) ).onFinishChange(function(value) {
   restart();
 });
+  dat.GUI.toggleHide();
+
   restartAndReschedule();
 }
 function faveByTitle(title) {
@@ -53,11 +61,16 @@ function faveByTitle(title) {
 }
 
 function restart() {
+  gCentre = {
+    x: windowWidth / 2,
+    y: windowHeight / 2
+  };
+
   var f, t;
   
   var chosenFave = faveByTitle(gOpts.colourSchemeName);    
   if (chosenFave) {
-    console.log("chose fave: " + chosenFave.title);
+    //console.log("chose fave: " + chosenFave.title);
     gBlendModeNum = chosenFave.blendModeNum;
     f = chosenFave.from;
     t = chosenFave.to;
