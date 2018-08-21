@@ -4,6 +4,10 @@ A simple p5js learning experiment using various colours and blend modes to draw 
 
 ![Another screenshot](screenshots/yellowrust-sparse-small.png)
 
+[There's a demo running here](https://nbogie.github.io/p5js-simple-particles/)
+
+You can also find old version of this at http://codepen.io/enz0/pen/yOobpQ.
+
 ###Controls
 
     ,: change to previous favourite config and respawn
@@ -22,8 +26,6 @@ A simple p5js learning experiment using various colours and blend modes to draw 
     p: pause the simulation
     d: toggle debug
     r: report the colour palette currently in use (to console)
-
-You can an old version of this at http://codepen.io/enz0/pen/yOobpQ.
 
 
 ### Screenshots
